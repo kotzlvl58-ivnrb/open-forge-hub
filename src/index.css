@@ -1,0 +1,181 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Dark, sober palette — near-black surfaces with a restrained emerald accent */
+  --color-ink-950: #07090c;
+  --color-ink-900: #0b0f14;
+  --color-ink-850: #0f141b;
+  --color-ink-800: #141b24;
+  --color-ink-700: #1c2634;
+  --color-ink-600: #26344a;
+  --color-ink-500: #3b4c66;
+  --color-ink-400: #5d7394;
+  --color-ink-300: #8fa3bd;
+  --color-ink-200: #c3d0e0;
+  --color-ink-100: #e2e8f0;
+  --color-ink-50: #f4f7fa;
+
+  --color-brand-300: #7ee9c3;
+  --color-brand-400: #52e0a4;
+  --color-brand-500: #34d28e;
+  --color-brand-600: #1fb877;
+  --color-brand-700: #169460;
+
+  --color-flow-400: #58a6ff;
+  --color-flow-500: #3d8bfd;
+
+  --color-amber-accent: #e8b339;
+
+  --radius-xl2: 1rem;
+
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+}
+
+/*
+ * Base layer
+ */
+@layer base {
+  html {
+    /* No global scroll-behavior: route changes must jump to top instantly,
+       and some environments silently drop smooth scrolls entirely. The Legal
+       page requests smooth explicitly, with an instant fallback. */
+
+    /* Native widgets (select dropdown, search cancel) follow the dark theme */
+    color-scheme: dark;
+  }
+
+  /* The native search cancel button renders pale and misaligned on dark
+     surfaces — hide it; clearing is one select-away and Esc also clears. */
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  body {
+    @apply bg-ink-900 text-ink-100 font-sans antialiased;
+    background-image:
+      radial-gradient(56rem 28rem at 85% -10%, rgb(31 184 119 / 0.07), transparent 60%),
+      radial-gradient(48rem 24rem at 8% 0%, rgb(61 139 253 / 0.06), transparent 55%);
+    background-repeat: no-repeat;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-ink-50;
+  }
+
+  /* Subtle, sober scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-600) transparent;
+  }
+}
+
+/*
+ * Reusable primitives
+ */
+@layer components {
+  .card {
+    @apply rounded-xl2 border border-ink-700/70 bg-ink-850/80;
+  }
+
+  .card-hover {
+    @apply transition-colors duration-200 hover:border-ink-500/80 hover:bg-ink-800;
+  }
+
+  .btn,
+  .btn-primary,
+  .btn-ghost,
+  .btn-ghost-accent {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-brand-600 text-ink-950 hover:bg-brand-500 active:bg-brand-700;
+  }
+
+  .btn-ghost {
+    @apply border border-ink-600 bg-transparent text-ink-100 hover:border-ink-400 hover:bg-ink-800;
+  }
+
+  .btn-ghost-accent {
+    @apply border border-brand-600/50 bg-brand-600/10 text-brand-400 hover:border-brand-500 hover:bg-brand-600/20;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-ink-600 bg-ink-900 px-3.5 py-2.5 text-sm text-ink-100 transition-[border-color,box-shadow] duration-150 placeholder:text-ink-400 hover:border-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20;
+  }
+
+  /* Native select restyled: custom chevron, dark popup (via color-scheme),
+     consistent paddings so the label never clips behind the arrow. */
+  .select {
+    @apply w-full cursor-pointer appearance-none rounded-lg border border-ink-600 bg-ink-900 py-2.5 pl-3.5 pr-9 text-sm text-ink-100 transition-[border-color,box-shadow] duration-150 hover:border-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238fa3bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+  }
+
+  .select option {
+    @apply bg-ink-850 text-ink-100;
+  }
+
+  /* Interactive chip (tag filters, tier pickers, section nav). Static badges
+     keep using .chip; this one is a button and gets full affordances. */
+  .chip-btn {
+    @apply inline-flex cursor-pointer items-center gap-1 rounded-md border border-ink-600/70 bg-ink-800/60 px-2.5 py-1 text-xs font-medium text-ink-300 transition-colors duration-150 hover:border-ink-400 hover:bg-ink-800 hover:text-ink-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500;
+  }
+
+  .chip-btn-active {
+    @apply border-brand-500/80 bg-brand-600/15 text-brand-300;
+  }
+
+  /* Navbar search field: compact at rest, focus ring + accent icon on focus. */
+  .nav-search {
+    @apply w-44 rounded-lg border border-ink-700 bg-ink-850 py-1.5 pl-8 pr-3 text-sm text-ink-100 transition-[width,border-color,box-shadow] duration-200 placeholder:text-ink-400 hover:border-ink-500 focus:border-brand-500 focus:bg-ink-900 focus:outline-none focus:ring-2 focus:ring-brand-500/15 lg:w-56 lg:focus:w-64;
+  }
+
+  .nav-field:focus-within .nav-search-icon {
+    @apply text-brand-400;
+  }
+
+  .nav-search-icon {
+    @apply transition-colors duration-150;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-md border border-ink-600/70 bg-ink-800/60 px-2 py-0.5 text-xs font-medium text-ink-300;
+  }
+
+  .kbd {
+    @apply rounded border border-ink-600 bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-ink-300;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold tracking-tight text-ink-50;
+  }
+}
